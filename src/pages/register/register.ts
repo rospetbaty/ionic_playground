@@ -13,6 +13,10 @@ export class RegisterPage {
 
   constructor(private nav: NavController, private auth: AuthServiceProvider, private alertCtrl: AlertController) { }
 
+  public returnHome() {
+    this.nav.push('LoginPage');
+  }
+
   public register() {
     this.auth.register(this.registerCredentials).subscribe(success => {
       if (success) {

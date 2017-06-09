@@ -16,7 +16,7 @@ export class LoginPage {
   public createAccount() {
     this.nav.push('RegisterPage');
   }
-ß
+
   public login() {
     this.showLoading()
     this.auth.login(this.registerCredentials).subscribe(allowed => {
