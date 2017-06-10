@@ -3,8 +3,11 @@ import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+import { GithubservicesProvider } from '../providers/githubservices/githubservices';
+
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
+  providers: [GithubservicesProvider]
 })
 export class MyApp {
   rootPage:any = 'LoginPage';
