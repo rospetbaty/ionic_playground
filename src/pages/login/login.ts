@@ -1,52 +1,86 @@
 import { Component } from '@angular/core';
-import { NavController, AlertController, LoadingController, Loading, IonicPage } from 'ionic-angular';
-import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
+import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+import { AuthProvider } from '../../providers/auth/auth';
+import { HomePage } from '../home/home';
 
-@IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
 })
 export class LoginPage {
-  loading: Loading;
-  registerCredentials = { email: '', password: '' };
 
-  constructor(private nav: NavController, private auth: AuthServiceProvider, private alertCtrl: AlertController, private loadingCtrl: LoadingController) { }
+	loading: any;
+	username: string;
+	password: string;
 
-  public createAccount() {
-    this.nav.push('RegisterPage');
-  }
+	constructor(public navCtrl: NavController, public navParams: NavParams, public storage: Storage,
+				public loadingCtrl: LoadingController, public auth: AuthProvider){
 
-  public login() {
-    this.showLoading()
-    this.auth.login(this.registerCredentials).subscribe(allowed => {
-      if (allowed) {
-        this.nav.setRoot('HomePage');
-      } else {
-        this.showError("Access Denied");
-      }
-    },
-      error => {
-        this.showError(error);
-      });
-  }
+	}
 
-  showLoading() {
-    this.loading = this.loadingCtrl.create({
-      content: 'Please wait...',
-      dismissOnPageChange: true
-    });
-    this.loading.present();
-  }
+	ionViewDidLoad() {
 
-  showError(text) {
-    this.loading.dismiss();
+		this.showLoader();
 
-    let alert = this.alertCtrl.create({
-      title: 'Fail',
-      subTitle: text,
-      buttons: ['OK']
-    });
-    alert.present(prompt);
-  }
+		this.storage.get('token').then((token) => {
+
+			if(typeof(token) !== 'undefined'){
+
+				console.log("authenticating with token: ", token);
+
+				this.auth.reauthenticate(token).map(res => res.json()).subscribe((res) => {
+
+					console.log(res);
+					this.loading.dismiss();
+
+					if(res.success){
+						this.navCtrl.setRoot(HomePage);
+					}
+
+				}, (err) => {
+					console.log(err);
+					this.loading.dismiss();
+				});
+
+			} else {
+
+				this.loading.dismiss();
+
+			}
+
+		});
+
+	}
+
+	login(){
+
+		this.showLoader();
+
+		this.auth.login(this.username, this.password).map(res => res.json()).subscribe((res) => {
+
+			this.loading.dismiss();
+
+			if(res.success){
+				console.log("received token: ", res.token);
+				this.storage.set('token', res.token);
+				this.navCtrl.setRoot(HomePage);
+			}
+
+		}, (err) => {
+			this.loading.dismiss();
+		});
+
+	}
+
+	showLoader(){
+
+		this.loading = this.loadingCtrl.create({
+			content: 'Authenticating...'
+		});
+
+		this.loading.present();
+
+	}
+
 }

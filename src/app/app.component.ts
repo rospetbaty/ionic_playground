@@ -3,6 +3,7 @@ import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+import { LoginPage } from '../pages/login/login';
 import { GithubservicesProvider } from '../providers/githubservices/githubservices';
 
 @Component({
@@ -10,7 +11,7 @@ import { GithubservicesProvider } from '../providers/githubservices/githubservic
   providers: [GithubservicesProvider]
 })
 export class MyApp {
-  rootPage:any = 'LoginPage';
+  rootPage:any = LoginPage;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen) {
     platform.ready().then(() => {
